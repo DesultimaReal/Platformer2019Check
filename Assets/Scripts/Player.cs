@@ -33,9 +33,9 @@ public class Player : MonoBehaviour
         {
             player = playerRef;
             
-            width = player.GetComponent<Collider2D>().bounds.extents.x + 0.1f;
-            height = player.GetComponent<Collider2D>().bounds.extents.y + 0.2f;
-            length = 0.05f;
+            width = player.GetComponent<Collider2D>().bounds.extents.x;
+            height = player.GetComponent<Collider2D>().bounds.extents.y;
+            length = 0.5f;
         }
 
         //Returns whether or not player is touching wall.
@@ -54,10 +54,14 @@ public class Player : MonoBehaviour
         public bool isGround()
         {
             bool bottom1 = Physics2D.Raycast(new Vector2(player.transform.position.x, player.transform.position.y - height), -Vector2.up, length);
-            bool bottom2 = Physics2D.Raycast(new Vector2(player.transform.position.x + (width - 0.2f), player.transform.position.y - height), -Vector2.up, length);
-            bool bottom3 = Physics2D.Raycast(new Vector2(player.transform.position.x - (width - 0.2f), player.transform.position.y - height), -Vector2.up, length);
+            bool bottom2 = Physics2D.Raycast(new Vector2(player.transform.position.x + (width - 0.1f), player.transform.position.y - height), -Vector2.up, length);
+            bool bottom3 = Physics2D.Raycast(new Vector2(player.transform.position.x - (width - 0.1f), player.transform.position.y - height), -Vector2.up, length);
+            //Debug.Log("Touching ground: " + bottom1 + bottom2 + bottom3 + "height: " + height + "length: " + length);
             if (bottom1 || bottom2 || bottom3)
+            {
                 return true;
+            }
+                
             else
                 return false;
         }
@@ -124,7 +128,7 @@ public class Player : MonoBehaviour
     }
     string TestPrintState()
     {
-        
+        state = "";
         if (groundState.isTouching())
         {
             state+= "\n Is Touching a Wall in General.";
