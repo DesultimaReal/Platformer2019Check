@@ -12,8 +12,8 @@ public class ShiftCamera : MonoBehaviour {
     {
         Camera cam = Camera.main;
         CameraTransform = cam.transform;
-         height = 2f * cam.orthographicSize;
-         width = height * cam.aspect;
+         height = 2f * cam.orthographicSize; 
+        width = height * cam.aspect;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

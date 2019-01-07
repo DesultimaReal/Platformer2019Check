@@ -1,0 +1,12 @@
+tree("Root")
+	sequence
+		MoveTo(-2.0, 0.0)
+		Wait 1.0
+		MoveTo(2.0, 0.0)
+		Wait 1.0
+		
+
+
+		
+
+

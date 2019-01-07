@@ -41,10 +41,13 @@ public class Player : MonoBehaviour
         //Returns whether or not player is touching wall.
         public bool isWall()
         {
-            bool left = Physics2D.Raycast(new Vector2(player.transform.position.x - width, player.transform.position.y), -Vector2.right, length);
-            bool right = Physics2D.Raycast(new Vector2(player.transform.position.x + width, player.transform.position.y), Vector2.right, length);
+            bool tLeft = Physics2D.Raycast(new Vector2(player.transform.position.x - width, player.transform.position.y + height), -Vector2.right, length);
+            bool tRight = Physics2D.Raycast(new Vector2(player.transform.position.x + width, player.transform.position.y + height), Vector2.right, length);
 
-            if (left || right)
+            bool bLeft = Physics2D.Raycast(new Vector2(player.transform.position.x - width, player.transform.position.y - height), -Vector2.right, length);
+            bool bRight = Physics2D.Raycast(new Vector2(player.transform.position.x + width, player.transform.position.y - height), Vector2.right, length);
+
+            if (tLeft || tRight || bLeft || bRight)
                 return true;
             else
                 return false;
@@ -100,12 +103,30 @@ public class Player : MonoBehaviour
     string state = "";
 
     public GroundState groundState;
+    public static Player instance;
+    public float deathheight;
+    private void Awake()
+    {
+        //SingleTon
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(this);
+        }
 
+    }
     void Start()
     {
+        
+
         //Create an object to check if player is grounded or touching wall
         groundState = new GroundState(transform.gameObject);
         ourBody = GetComponent<Rigidbody2D>();
+
+        deathheight = Camera.main.transform.position.y - Camera.main.orthographicSize;
     }
 
     private Vector2 input;
@@ -125,6 +146,13 @@ public class Player : MonoBehaviour
 
         //Reverse player if going different direction
         transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, (input.x == 0) ? transform.localEulerAngles.y : (input.x + 1) * 90, transform.localEulerAngles.z);
+
+
+
+        if(transform.position.y < deathheight)
+        {
+            CameraController.instance.Respawn();
+        }
     }
     string TestPrintState()
     {
