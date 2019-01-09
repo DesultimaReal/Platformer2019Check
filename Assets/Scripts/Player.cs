@@ -133,8 +133,13 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        Debug.Log("HorizontalInput: "+Input.GetAxis("LeftJoystickHorizontal") +
+            "\nVertInput: " + Input.GetAxis("LeftJoystickVertical") + 
+            "\nAButton: " + Input.GetButton("Abutton"));
+
+
         //Handle input
-        if (Input.GetKey(KeyCode.LeftArrow))
+        /*if (Input.GetKey(KeyCode.LeftArrow))
             input.x = -1;
         else if (Input.GetKey(KeyCode.RightArrow))
             input.x = 1;
@@ -143,7 +148,7 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
             input.y = 1;
-
+            */
         //Reverse player if going different direction
         transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, (input.x == 0) ? transform.localEulerAngles.y : (input.x + 1) * 90, transform.localEulerAngles.z);
 
