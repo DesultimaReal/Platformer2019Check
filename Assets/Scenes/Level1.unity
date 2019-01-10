@@ -890,6 +890,11 @@ Prefab:
       propertyPath: m_WasSpriteAssigned
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114390006696364904, guid: d290ba9224fdc2f47b8a6c83e0c8c1a3,
+        type: 2}
+      propertyPath: flashlight
+      value: 
+      objectReference: {fileID: 1195511008}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d290ba9224fdc2f47b8a6c83e0c8c1a3, type: 2}
   m_IsPrefabParent: 0
@@ -1913,7 +1918,7 @@ Transform:
   m_GameObject: {fileID: 1195511008}
   m_LocalRotation: {x: -0, y: -0, z: 0.8442081, w: 0.5360156}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3.0268815, y: 3.0268815, z: 3.026879}
+  m_LocalScale: {x: 3.0268855, y: 3.0268857, z: 3.0268793}
   m_Children: []
   m_Father: {fileID: 1964974139}
   m_RootOrder: 0
@@ -2027,7 +2032,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!50 &1279818673
 Rigidbody2D:
   serializedVersion: 4

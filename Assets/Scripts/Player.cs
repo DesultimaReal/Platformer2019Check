@@ -41,11 +41,11 @@ public class Player : MonoBehaviour
         //Returns whether or not player is touching wall.
         public bool isWall()
         {
-            bool tLeft = Physics2D.Raycast(new Vector2(player.transform.position.x - width, player.transform.position.y + height), -Vector2.right, length);
-            bool tRight = Physics2D.Raycast(new Vector2(player.transform.position.x + width, player.transform.position.y + height), Vector2.right, length);
+            bool tLeft = Physics2D.Raycast(new Vector2(player.transform.position.x - width, player.transform.position.y + height), -Vector2.right, length, 1 << LayerMask.NameToLayer("Walls"));
+            bool tRight = Physics2D.Raycast(new Vector2(player.transform.position.x + width, player.transform.position.y + height), Vector2.right, length, 1 << LayerMask.NameToLayer("Walls"));
 
-            bool bLeft = Physics2D.Raycast(new Vector2(player.transform.position.x - width, player.transform.position.y - height), -Vector2.right, length);
-            bool bRight = Physics2D.Raycast(new Vector2(player.transform.position.x + width, player.transform.position.y - height), Vector2.right, length);
+            bool bLeft = Physics2D.Raycast(new Vector2(player.transform.position.x - width, player.transform.position.y - height), -Vector2.right, length, 1 << LayerMask.NameToLayer("Walls"));
+            bool bRight = Physics2D.Raycast(new Vector2(player.transform.position.x + width, player.transform.position.y - height), Vector2.right, length, 1 << LayerMask.NameToLayer("Walls"));
 
             if (tLeft || tRight || bLeft || bRight)
                 return true;
@@ -56,9 +56,9 @@ public class Player : MonoBehaviour
         //Returns whether or not player is touching ground.
         public bool isGround()
         {
-            bool bottom1 = Physics2D.Raycast(new Vector2(player.transform.position.x, player.transform.position.y - height), -Vector2.up, length);
-            bool bottom2 = Physics2D.Raycast(new Vector2(player.transform.position.x + (width - 0.1f), player.transform.position.y - height), -Vector2.up, length);
-            bool bottom3 = Physics2D.Raycast(new Vector2(player.transform.position.x - (width - 0.1f), player.transform.position.y - height), -Vector2.up, length);
+            bool bottom1 = Physics2D.Raycast(new Vector2(player.transform.position.x, player.transform.position.y - height), -Vector2.up, length, 1 << LayerMask.NameToLayer("Walls"));
+            bool bottom2 = Physics2D.Raycast(new Vector2(player.transform.position.x + (width - 0.1f), player.transform.position.y - height), -Vector2.up, length, 1 << LayerMask.NameToLayer("Walls"));
+            bool bottom3 = Physics2D.Raycast(new Vector2(player.transform.position.x - (width - 0.1f), player.transform.position.y - height), -Vector2.up, length, 1 << LayerMask.NameToLayer("Walls"));
             //Debug.Log("Touching ground: " + bottom1 + bottom2 + bottom3 + "height: " + height + "length: " + length);
             if (bottom1 || bottom2 || bottom3)
             {
@@ -93,18 +93,22 @@ public class Player : MonoBehaviour
         }
     }
 
-    //Feel free to tweak these values in the inspector to perfection.  I prefer them private.
-    public float speed = 14f;
-    public float accel = 6f;
-    public float airAccel = 3f;
-    public float jump = 14f;  //I could use the "speed" variable, but this is only coincidental in my case.  Replace line 89 if you think otherwise.
-    public float walljump = 10f;
+    #region Character physics variables
+    float speed = 14f;
+    float accel = 6f;
+    float airAccel = 3f;
+    float jump = 14f;  //I could use the "speed" variable, but this is only coincidental in my case.  Replace line 89 if you think otherwise.
+    float walljump = 10f;
     float yvelocity;
-    string state = "";
+    #endregion
 
+    #region Character state variables
+    string state = "";
     public GroundState groundState;
     public static Player instance;
     public float deathheight;
+    #endregion
+
     private void Awake()
     {
         //SingleTon
@@ -118,6 +122,7 @@ public class Player : MonoBehaviour
         }
 
     }
+
     void Start()
     {
         
@@ -129,35 +134,65 @@ public class Player : MonoBehaviour
         deathheight = Camera.main.transform.position.y - Camera.main.orthographicSize;
     }
 
-    private Vector2 input;
+    //For controlling input x and y
+    Vector2 input;
+
+    #region Controlling the Flashlight variables
+    public GameObject flashlight;
+    float turnV, turnH, aimAngle, horizontal;
+    Vector2 aimDirection;
+    Quaternion aimRotation;
+    float turnSpeed = 2;
+    #endregion
 
     void Update()
     {
-        Debug.Log("HorizontalInput: "+Input.GetAxis("LeftJoystickHorizontal") +
-            "\nVertInput: " + Input.GetAxis("LeftJoystickVertical") + 
-            "\nAButton: " + Input.GetButton("Abutton"));
+        
+        
 
 
-        //Handle input
-        /*if (Input.GetKey(KeyCode.LeftArrow))
-            input.x = -1;
-        else if (Input.GetKey(KeyCode.RightArrow))
+        #region FlashlightControlHandling'
+        turnV = Input.GetAxis("RightJoystickVertical");
+        turnH = Input.GetAxis("RightJoystickHorizontal");
+        aimDirection = new Vector2(turnH, turnV);
+        aimAngle = Mathf.Atan2(turnH, turnV) * Mathf.Rad2Deg;
+
+        Debug.Log("HorizontalInput: " + turnH +
+            "\nVertInput: " + turnV
+            );
+
+        if (turnV != 0 && turnH != 0)
+        {
+            aimRotation = Quaternion.AngleAxis(aimAngle, Vector3.forward);
+            Debug.Log("\nAimRot: " + aimRotation);  
+            flashlight.transform.rotation = Quaternion.Slerp(flashlight.transform.rotation, aimRotation, turnSpeed * Time.time);
+        }
+        #endregion
+
+        #region MovementControlHandling
+        horizontal = Input.GetAxis("LeftJoystickHorizontal");
+        if (horizontal > 0.2)
+        {
             input.x = 1;
+        }
+        else if(horizontal < -0.2)
+        {
+            input.x = -1;
+        }
         else
+        {
             input.x = 0;
+        }
+        input.y = Input.GetButton("Abutton") ? 1 : 0;
+        // Reverse player if going a different direction.
+        //transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, (input.x == 0) ? transform.localEulerAngles.y : (input.x + 1) * 90, transform.localEulerAngles.z);
+        #endregion
 
-        if (Input.GetKeyDown(KeyCode.Space))
-            input.y = 1;
-            */
-        //Reverse player if going different direction
-        transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, (input.x == 0) ? transform.localEulerAngles.y : (input.x + 1) * 90, transform.localEulerAngles.z);
-
-
-
-        if(transform.position.y < deathheight)
+        if (transform.position.y < deathheight)
         {
             CameraController.instance.Respawn();
         }
+
     }
     string TestPrintState()
     {
